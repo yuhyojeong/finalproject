@@ -130,6 +130,128 @@ void Screen_manager::print_share(){
         }
     }
     //Bullet part ends
+
+    //object part
+    for (int i = 0; i < num_event; i++){
+        if (curr_frame == frame_event[i]){
+            board[y_event[i]][x_event[i]] = type_event[i];
+            switch (type_event[i]){
+                case 'P':{
+                    Powerup_bullet* pb = new Powerup_bullet(y_event[i], x_event[i], 'P', i);
+                    this->my_plane.buff.push_back(pb);
+                    break;
+                }
+                case 'L':{
+                    Levelup_bullet* lb = new Levelup_bullet(y_event[i], x_event[i], 'L', i);
+                    this->my_plane.buff.push_back(lb);
+                    break;
+                }
+                case 'n':{
+                    Enemy_1n* enn = new Enemy_1n(y_event[i], x_event[i], 'n', i, 10, 1);
+                    enemy.push_back(enn);
+                    break;
+                }
+                case 'r':{
+                    Enemy_2r* enn = new Enemy_2r(y_event[i], x_event[i], 'r', i, 5, 2, 3, frame_event[i], 1);
+                    enemy.push_back(enn);
+                    break;
+                }
+                case 's':{
+                    Enemy_3s* enn = new Enemy_3s(y_event[i], x_event[i], 's', i, 4, 3, 9, frame_event[i], 1);
+                    enemy.push_back(enn);
+                    break;
+                }
+                case 'd':{
+                    Enemy_4d* enn = new Enemy_4d(y_event[i], x_event[i], 'd', i, 5, 4, 3, frame_event[i], 1);
+                    enemy.push_back(enn);
+                    break;
+                }
+                case 'a':{
+                    Enemy_5a* enn = new Enemy_5a(y_event[i], x_event[i], 'a', i, 8, 5, 6, frame_event[i], 1);
+                    enemy.push_back(enn);
+                    break;
+                }
+                default:
+                    break;
+            }
+        }
+    }
+
+    for (auto elem : enemy){
+        board[elem->y][elem->x] = elem->sym;
+    }
+    for (auto elem : my_plane.buff){
+        board[elem->y][elem->x] = elem->sym;
+    }
+
+    for (auto itr = enemy.begin(); itr < enemy.end(); itr++){ //enemy buff 주기
+        if ((*itr)->sym == 'a' || (*itr)->sym == 'A'){
+            for (auto enem = enemy.begin(); enem < enemy.end(); enem++){
+                if (enem-enemy.begin()!= itr-enemy.begin() && (*enem)->y <= (*itr)->y + 3 && (*enem)->y >= (*itr)->y - 3 && (*enem)->x <= (*itr)->x + 3 && (*enem)->x >= (*itr)->x - 3){
+                    (*enem)->damage ++;
+                    switch ((*enem)->sym){
+                        case 'n':
+                            (*enem)->sym = 'N';
+                            break;
+                        case 'r':
+                            (*enem)->sym = 'R';
+                            break;
+                        case 's':
+                            (*enem)->sym = 'S';
+                            break;
+                        case 'd':
+                            (*enem)->sym = 'D';
+                            break;
+                    }
+                }
+            }
+        }
+    }
+
+    for (auto itr = enemy.begin(); itr < enemy.end(); itr++){ //enemy 이동
+        if ((*itr)->sym != 'n' && (*itr)->sym != 'a' && (*itr)->sym != 'N' && (*itr)->sym != 'A'){
+            if ((this->curr_frame - (*itr)->createfr)/((*itr)->cellspeed)> 0){
+                board[(*itr)->y][(*itr)->x] = ' ';
+                if (board[(*itr)->y + 1][(*itr)->x] != 'w'){
+                    board[(*itr)->y + 1][(*itr)->x] = (*itr)->sym;
+                    Enemy_1n *enn = new Enemy_1n((*itr)->y + 1, (*itr)->x, (*itr)->sym, (*itr)->order, (*itr)->hp, (*itr)->score, (*itr)->cellspeed, curr_frame);
+                    if (((*itr)->sym == 's' || (*itr)->sym == 'S') && board[enn->y + 1][enn->x] != 'w'){
+                        Enemy_bullet* sbul = new Enemy_bullet(enn->y + 1, enn->x, enn->sym, enn->damage, curr_frame);
+                        enembul.push_back(sbul);
+                        board[sbul->y][sbul->x] = '*';
+                    } else if (((*itr)->sym == 'd' || (*itr)->sym == 'D') && board[enn->y + 1][enn->x + 1] != 'w' && board[enn->y + 1][enn->x - 1] != 'w'){
+                        if ((*itr)->x <= 29){ //왼쪽 벽이 더 가까움
+                            Enemy_bullet* dbul = new Enemy_bullet(enn->y + 1, enn->x - 1, enn->sym, enn->damage, curr_frame);
+                            enembul.push_back(dbul);
+                            board[dbul->y][dbul->x] = '*';
+                        } else{
+                            Enemy_bullet* dbul = new Enemy_bullet(enn->y + 1, enn->x + 1, enn->sym, enn->damage, curr_frame);
+                            enembul.push_back(dbul);
+                            board[dbul->y][dbul->x] = '*';
+                        }
+                    }
+                    enemy.insert(itr, enn);
+                    enemy.erase(itr + 1);
+                } else{
+                    enemy.erase(itr);
+                    itr--;
+                }
+            }
+        }
+    }
+
+    for (auto itr = enemy.begin(); itr < enemy.end(); itr++){
+        if ((*itr)->hp <= 0){ //적 사망
+            board[(*itr)->y][(*itr)->x] = ' ';
+            dead[(*itr)->score - 1] ++;
+            enemy.erase(itr);
+            itr--;
+        }
+    }
+
+    //object part ends
+
+
 }
 
 //print when key didn't pressed
