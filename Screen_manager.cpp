@@ -89,7 +89,8 @@ void Screen_manager::print_share(){
     for (auto itr = enembul.begin(); itr < enembul.end(); itr++){ //enemy bullet
         if ((curr_frame - (*itr)->create_frame_bullet) > 0){
             if ((*itr)->y == my_plane.y && (*itr)->x == my_plane.x){ //plane과 enemybullet 만나는지
-                my_plane.hpdown((*itr)->damage);
+                buldam = (*itr)->damage;
+                withbullet++;
             }
             if ((*itr)->sym == 's' || (*itr)->sym == 'S'){
                 board[(*itr)->y][(*itr)->x] = ' ';
@@ -138,12 +139,12 @@ void Screen_manager::print_share(){
             switch (type_event[i]){
                 case 'P':{
                     Powerup_bullet* pb = new Powerup_bullet(y_event[i], x_event[i], 'P', i);
-                    this->my_plane.buff.push_back(pb);
+                    my_plane.buff.push_back(pb);
                     break;
                 }
                 case 'L':{
                     Levelup_bullet* lb = new Levelup_bullet(y_event[i], x_event[i], 'L', i);
-                    this->my_plane.buff.push_back(lb);
+                    my_plane.buff.push_back(lb);
                     break;
                 }
                 case 'n':{
@@ -172,11 +173,11 @@ void Screen_manager::print_share(){
                     break;
                 }
                 default:
-                    break;
+                   break;
             }
         }
     }
-
+    
     for (auto elem : enemy){
         board[elem->y][elem->x] = elem->sym;
     }
@@ -188,7 +189,7 @@ void Screen_manager::print_share(){
         if ((*itr)->sym == 'a' || (*itr)->sym == 'A'){
             for (auto enem = enemy.begin(); enem < enemy.end(); enem++){
                 if (enem-enemy.begin()!= itr-enemy.begin() && (*enem)->y <= (*itr)->y + 3 && (*enem)->y >= (*itr)->y - 3 && (*enem)->x <= (*itr)->x + 3 && (*enem)->x >= (*itr)->x - 3){
-                    (*enem)->damage ++;
+                    // (*enem)->damage ++;
                     switch ((*enem)->sym){
                         case 'n':
                             (*enem)->sym = 'N';
@@ -196,12 +197,20 @@ void Screen_manager::print_share(){
                         case 'r':
                             (*enem)->sym = 'R';
                             break;
-                        case 's':
-                            (*enem)->sym = 'S';
+                        case 's':{
+                            // (*enem)->sym = 'S';
+                            Enemy_1n * enn = new Enemy_1n((*enem)->y, (*enem)->x, 'S', (*enem)->order, (*enem)->hp, 3, 9, (*enem)->createfr, (*enem)->damage + 1);
+                            enemy.insert(enem, enn);
+                            enemy.erase(enem + 1);
                             break;
-                        case 'd':
-                            (*enem)->sym = 'D';
+                        }
+                        case 'd':{
+                            // (*enem)->sym = 'D';
+                            Enemy_1n * enn = new Enemy_1n((*enem)->y, (*enem)->x, 'D', (*enem)->order, (*enem)->hp, 4, 3, (*enem)->createfr, (*enem)->damage + 1);
+                            enemy.insert(enem, enn);
+                            enemy.erase(enem + 1);
                             break;
+                        }
                     }
                 }
             }
@@ -214,7 +223,7 @@ void Screen_manager::print_share(){
                 board[(*itr)->y][(*itr)->x] = ' ';
                 if (board[(*itr)->y + 1][(*itr)->x] != 'w'){
                     board[(*itr)->y + 1][(*itr)->x] = (*itr)->sym;
-                    Enemy_1n *enn = new Enemy_1n((*itr)->y + 1, (*itr)->x, (*itr)->sym, (*itr)->order, (*itr)->hp, (*itr)->score, (*itr)->cellspeed, curr_frame);
+                    Enemy_1n *enn = new Enemy_1n((*itr)->y + 1, (*itr)->x, (*itr)->sym, (*itr)->order, (*itr)->hp, (*itr)->score, (*itr)->cellspeed, curr_frame, (*itr)->damage);
                     if (((*itr)->sym == 's' || (*itr)->sym == 'S') && board[enn->y + 1][enn->x] != 'w'){
                         Enemy_bullet* sbul = new Enemy_bullet(enn->y + 1, enn->x, enn->sym, enn->damage, curr_frame);
                         enembul.push_back(sbul);
@@ -271,10 +280,9 @@ void Screen_manager::print_share(){
         my_plane.level ++;
         my_plane.lbuff = false;
     }
-
     for (auto itr = enemy.begin(); itr < enemy.end(); itr++){ //적이랑 부딪히는지 확인
         if (my_plane.y == (*itr)->y && my_plane.x == (*itr)->x){
-            my_plane.hpdown(1);
+            withenemy++;
         }
     }
 }

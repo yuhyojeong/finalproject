@@ -93,8 +93,16 @@ int main(int argc, char *argv[])
                     manager.dead[i] = 0;
                 }
             }
+            if (manager.withenemy > 0){
+                manager.my_plane.hp--;
+                manager.withenemy = 0;
+            }
+            if (manager.withbullet >0){
+                manager.my_plane.hp -= manager.buldam;
+                manager.withbullet = 0;
+            }
             //종료 조건
-            if (manager.my_plane.gethp() <= 0){
+            if (manager.my_plane.hp <= 0){
                 manager.end = true;
             }
             int count = 0;

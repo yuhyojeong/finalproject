@@ -28,11 +28,7 @@ class My_plane{ // hp = 5
         bool powerup = false;
         int level = 1;
         bool lbuff = false;
-        void hpdown(int i) {hp -= i;}
-        int gethp() {return hp;}
-
-    private:
-        int hp = 10;
+        int hp = 5;
 };
 
 class Enemy_1n {
@@ -41,9 +37,9 @@ class Enemy_1n {
         int y, x, order, hp, score, cellspeed;
         char sym;
         int createfr = 0;
-        void movenemy() {y++;}
-        bool movetime = false;
-        int damage = 1;
+        int damage;
+        bool enembuff = false;
+        void damageup() {damage++;}
 };
 
 class Enemy_2r : public Enemy_1n{

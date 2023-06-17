@@ -28,6 +28,7 @@ class Bullet{
         int order; //event 순서
         bool powerup = false;
         int level = 1;
+        bool damagebuff = false;
 };
 
 class Powerup_bullet : public Bullet{

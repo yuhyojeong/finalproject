@@ -24,8 +24,7 @@ class Screen_manager{
         int y, x;
         int width=60;
         int height=30;
-        int frame_event[300]={0,}, y_event[300]={0,}, x_event[300]={0,};
-        int copy_frame[300]={0, };
+        int frame_event[300]={0,}, y_event[300]={0,}, x_event[300]={0,}, copy_frame[300]={0,};
         char type_event[300] = {' ',};
         int num_event;
         void print(int ascii);
@@ -42,5 +41,9 @@ class Screen_manager{
         bool end = false;
         vector<Bullet*> enembul;
         int framecount = 0;
+        int withenemy = 0;
+        int buldam;
+        int withbullet = 0;
+        int enembuf;
 };
 #endif
