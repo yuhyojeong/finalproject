@@ -86,10 +86,50 @@ void Screen_manager::print_share(){
         check_frame++;
     }
 
-
+    for (auto itr = enembul.begin(); itr < enembul.end(); itr++){ //enemy bullet
+        if ((curr_frame - (*itr)->create_frame_bullet) > 0){
+            if ((*itr)->y == my_plane.y && (*itr)->x == my_plane.x){ //plane과 enemybullet 만나는지
+                my_plane.hpdown((*itr)->damage);
+            }
+            if ((*itr)->sym == 's' || (*itr)->sym == 'S'){
+                board[(*itr)->y][(*itr)->x] = ' ';
+                if (board[(*itr)->y + 1][(*itr)->x] != 'w'){
+                    board[(*itr)->y + 1][(*itr)->x] = '*';
+                    Enemy_bullet* sbul = new Enemy_bullet((*itr)->y + 1, (*itr)->x, (*itr)->sym, (*itr)->damage, curr_frame);
+                    enembul.insert(itr, sbul);
+                    enembul.erase(itr + 1);
+                } else{
+                    enembul.erase(itr);
+                    itr--;
+                }
+            } else if ((*itr)->sym == 'd' || (*itr)->sym == 'D'){
+                board[(*itr)->y][(*itr)->x] = ' ';
+                if ((*itr)->x <= 29){ //왼쪽이 더 가까움
+                    if (board[(*itr)->y + 1][(*itr)->x - 1] != 'w'){
+                        board[(*itr)->y + 1][(*itr)->x - 1] = '*';
+                        Enemy_bullet* dbul = new Enemy_bullet((*itr)->y + 1, (*itr)->x - 1, (*itr)->sym, (*itr)->damage, curr_frame);
+                        enembul.insert(itr, dbul);
+                        enembul.erase(itr + 1);
+                    } else{
+                        enembul.erase(itr);
+                        itr--;
+                    }
+                } else{
+                    if (board[(*itr)->y + 1][(*itr)->x + 1] != 'w'){
+                        board[(*itr)->y + 1][(*itr)->x + 1] = '*';
+                        Enemy_bullet* dbul = new Enemy_bullet((*itr)->y + 1, (*itr)->x + 1, (*itr)->sym, (*itr)->damage, curr_frame);
+                        enembul.insert(itr, dbul);
+                        enembul.erase(itr + 1);
+                    } else{
+                        enembul.erase(itr);
+                        itr--;
+                    }
+                }
+                
+            }
+        }
+    }
     //Bullet part ends
-
-
 }
 
 //print when key didn't pressed
