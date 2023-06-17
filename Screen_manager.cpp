@@ -251,7 +251,32 @@ void Screen_manager::print_share(){
 
     //object part ends
 
+    //plane part
+    board[my_plane.y][my_plane.x] = 'M';
+    
+    for (auto itr = my_plane.buff.begin(); itr < my_plane.buff.end(); itr++){ //buff 먹는지 확인
+        if (my_plane.y == (*itr)->y && my_plane.x == (*itr)->x){
+            if ((*itr)->sym == 'P'){
+                my_plane.powerup = true;
+                my_plane.buff.erase(itr);
+                itr--;
+            } else if ((*itr)->sym == 'L'){
+                my_plane.lbuff = true;
+                my_plane.buff.erase(itr);
+                itr--;
+            }
+        }
+    }
+    if (my_plane.lbuff == true){
+        my_plane.level ++;
+        my_plane.lbuff = false;
+    }
 
+    for (auto itr = enemy.begin(); itr < enemy.end(); itr++){ //적이랑 부딪히는지 확인
+        if (my_plane.y == (*itr)->y && my_plane.x == (*itr)->x){
+            my_plane.hpdown(1);
+        }
+    }
 }
 
 //print when key didn't pressed
